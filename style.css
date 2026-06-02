@@ -173,3 +173,12 @@ textarea {
     border-radius: 8px;
     cursor: pointer;
 }
+.photo {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.photo:hover {
+    transform: scale(1.05);
+    opacity: 0.8;
+}
