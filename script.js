@@ -6,13 +6,14 @@ let currentEleve = null;
 /* ---------------- INIT ---------------- */
 
 fetch("eleves.json")
-    .then(r => r.json())
-    .then(data => {
-        if (eleves.length === 0) eleves = data;
+.then(r => r.json())
+.then(data => {
+    if (eleves.length === 0) eleves = data;
 
-        afficherClasses();
-        afficherEleves();
-    });
+    afficherClasses();
+    afficherEleves();
+    initPhoto();
+});
 
 /* ---------------- CLASSES ---------------- */
 
@@ -23,13 +24,13 @@ function afficherClasses() {
 
     container.innerHTML = "";
 
-    classes.forEach(classe => {
+    classes.forEach(c => {
         const btn = document.createElement("div");
         btn.className = "classe-btn";
-        btn.textContent = classe;
+        btn.textContent = c;
 
         btn.onclick = () => {
-            classeActuelle = classe;
+            classeActuelle = c;
             afficherEleves();
         };
 
@@ -57,12 +58,12 @@ function afficherEleves() {
         );
     }
 
-    liste.forEach(eleve => {
+    liste.forEach(e => {
         const div = document.createElement("div");
         div.className = "eleve";
-        div.textContent = eleve.prenom + " " + eleve.nom;
+        div.textContent = e.prenom + " " + e.nom;
 
-        div.onclick = () => afficherFiche(eleve);
+        div.onclick = () => afficherFiche(e);
 
         container.appendChild(div);
     });
@@ -80,9 +81,9 @@ function afficherFiche(eleve) {
         eleve.prenom + " " + eleve.nom;
 
     document.getElementById("classe").textContent = eleve.classe;
+    document.getElementById("session").textContent = eleve.session || "-";
     document.getElementById("email").textContent = eleve.email || "-";
     document.getElementById("telephone").textContent = eleve.telephone || "-";
-    document.getElementById("session").textContent = eleve.session || "-";
 
     document.getElementById("photo").src =
         eleve.photo || "https://via.placeholder.com/120";
@@ -99,7 +100,36 @@ function afficherFiche(eleve) {
     updateAdminUI(eleve);
 }
 
-/* ---------------- ADMIN UI ---------------- */
+/* ---------------- PHOTO UPLOAD ---------------- */
+
+function initPhoto() {
+    const photo = document.getElementById("photo");
+    const input = document.getElementById("photoInput");
+
+    photo.addEventListener("click", () => {
+        if (!currentEleve) return;
+        input.click();
+    });
+
+    input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file || !currentEleve) return;
+
+        const reader = new FileReader();
+
+        reader.onload = e => {
+            currentEleve.photo = e.target.result;
+            document.getElementById("photo").src = currentEleve.photo;
+
+            save();
+            showFeedback("📸 Photo ajoutée !");
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+/* ---------------- ADMIN ---------------- */
 
 function updateAdminUI(eleve) {
     const del = document.getElementById("deleteBtn");
@@ -123,7 +153,7 @@ document.getElementById("backBtn").onclick = () => {
 
 document.getElementById("search").addEventListener("input", afficherEleves);
 
-/* ---------------- DARK MODE ---------------- */
+/* ---------------- DARK ---------------- */
 
 document.getElementById("darkToggle").onclick = () => {
     document.body.classList.toggle("dark");
@@ -132,7 +162,7 @@ document.getElementById("darkToggle").onclick = () => {
 /* ---------------- AJOUT ---------------- */
 
 function ajouterEleve() {
-    const eleve = {
+    const e = {
         prenom: newPrenom.value,
         nom: newNom.value,
         classe: newClasse.value,
@@ -143,19 +173,19 @@ function ajouterEleve() {
         photo: ""
     };
 
-    eleves.push(eleve);
+    eleves.push(e);
     save();
 
     afficherClasses();
     afficherEleves();
 
-    showFeedback("✔ Élève ajouté !");
+    showFeedback("✔ Ajouté !");
 }
 
 /* ---------------- SUPPRESSION ---------------- */
 
 function supprimerEleve(eleve) {
-    if (!confirm("Supprimer cet élève ?")) return;
+    if (!confirm("Supprimer ?")) return;
 
     eleves = eleves.filter(e =>
         !(e.nom === eleve.nom && e.prenom === eleve.prenom)
@@ -167,7 +197,7 @@ function supprimerEleve(eleve) {
 
     document.getElementById("fiche").classList.add("hidden");
 
-    showFeedback("🗑 Élève supprimé");
+    showFeedback("🗑 Supprimé");
 }
 
 /* ---------------- SAVE ---------------- */
@@ -176,7 +206,7 @@ function save() {
     localStorage.setItem("eleves", JSON.stringify(eleves));
 }
 
-/* ---------------- FEEDBACK + CONFETTI ---------------- */
+/* ---------------- FEEDBACK SIMPLE ---------------- */
 
 function showFeedback(msg) {
     const f = document.getElementById("feedback");
@@ -184,110 +214,10 @@ function showFeedback(msg) {
     f.textContent = msg;
     f.classList.remove("hidden");
 
-    document.body.style.transition = "0.3s";
-    document.body.style.background = "#2ecc71";
-
-    let t = 3;
-
-    const interval = setInterval(() => {
-        f.textContent = msg + " (" + t + ")";
-        t--;
-
-        if (t < 0) {
-            clearInterval(interval);
-            f.classList.add("hidden");
-            document.body.style.background = "";
-        }
-    }, 1000);
-
-    launchConfetti();
+    setTimeout(() => f.classList.add("hidden"), 2000);
 }
-
-function launchConfetti() {
-    const canvas = document.getElementById("confetti");
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particles = [];
-
-    for (let i = 0; i < 80; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: Math.random() * 6 + 2,
-            d: Math.random() * 10
-        });
-    }
-
-    let frame = 0;
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        particles.forEach(p => {
-            ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 60%)`;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fill();
-
-            p.y += 2;
-            p.x += Math.sin(p.d);
-        });
-
-        frame++;
-        if (frame < 60) requestAnimationFrame(animate);
-    }
-
-    animate();
-}
-
-/* ---------------- PHOTO UPLOAD ---------------- */
-
-document.getElementById("photo").onclick = () => {
-    document.getElementById("photoInput").click();
-};
-
-document.getElementById("photoInput").addEventListener("change", function () {
-
-    const file = this.files[0];
-    if (!file || !currentEleve) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-        currentEleve.photo = e.target.result;
-
-        document.getElementById("photo").src = currentEleve.photo;
-
-        save();
-
-        showFeedback("📸 Photo mise à jour !");
-    };
-
-    reader.readAsDataURL(file);
-});
 
 /* ---------------- KONAMI ADMIN ---------------- */
-
-function toggleAdmin() {
-    adminMode = !adminMode;
-
-    const panel = document.getElementById("adminPanel");
-
-    if (adminMode) {
-        panel.classList.remove("hidden");
-        showFeedback("🔐 Mode admin activé");
-    } else {
-        panel.classList.add("hidden");
-        showFeedback("🔓 Mode admin désactivé");
-    }
-
-    if (currentEleve) {
-        updateAdminUI(currentEleve);
-    }
-}
 
 let konami = [
     "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
@@ -297,16 +227,19 @@ let konami = [
 
 let index = 0;
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keydown", e => {
 
-    if (e.key === konami[index]) {
-        index++;
-    } else {
-        index = 0;
-    }
+    if (e.key === konami[index]) index++;
+    else index = 0;
 
     if (index === konami.length) {
-        toggleAdmin();
+        adminMode = !adminMode;
+
+        document.getElementById("adminPanel")
+            .classList.toggle("hidden");
+
+        showFeedback("🔐 Admin toggle");
+
         index = 0;
     }
 });
