@@ -10,33 +10,31 @@
 
 <h1>Annuaire du Lycée</h1>
 
-<!-- CONTROLES -->
 <input type="text" id="search" placeholder="Rechercher un élève...">
 
-<button id="darkToggle">🌙 Mode sombre</button>
+<button id="darkToggle">🌙 Mode</button>
 <button id="backBtn" class="hidden">⬅ Retour</button>
 
 <!-- CLASSES -->
 <div id="classes"></div>
 
-<!-- LAYOUT PRINCIPAL -->
+<!-- APP -->
 <div class="container">
 
-    <!-- LISTE -->
     <div id="annuaire"></div>
 
-    <!-- FICHE ELEVE -->
     <div id="fiche" class="hidden">
 
-        <img id="photo" class="photo">
+        <img id="photo" class="photo" src="https://via.placeholder.com/120">
+
         <input type="file" id="photoInput" accept="image/*" class="hidden">
 
         <h2 id="nomComplet"></h2>
 
-        <p><strong>Classe :</strong> <span id="classe"></span></p>
-        <p><strong>Session :</strong> <span id="session"></span></p>
-        <p><strong>Email :</strong> <span id="email"></span></p>
-        <p><strong>Téléphone :</strong> <span id="telephone"></span></p>
+        <p><b>Classe :</b> <span id="classe"></span></p>
+        <p><b>Session :</b> <span id="session"></span></p>
+        <p><b>Email :</b> <span id="email"></span></p>
+        <p><b>Téléphone :</b> <span id="telephone"></span></p>
 
         <h3>Description</h3>
         <textarea id="description"></textarea>
@@ -46,9 +44,9 @@
     </div>
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- ADMIN -->
 <div id="adminPanel" class="hidden">
-    <h3>➕ Ajouter un élève (ADMIN)</h3>
+    <h3>➕ Ajouter élève (ADMIN)</h3>
 
     <input id="newPrenom" placeholder="Prénom">
     <input id="newNom" placeholder="Nom">
@@ -58,7 +56,7 @@
     <button onclick="ajouterEleve()">Ajouter</button>
 </div>
 
-<!-- FEEDBACK + CONFETTI -->
+<!-- FEEDBACK -->
 <div id="feedback" class="hidden"></div>
 <canvas id="confetti"></canvas>
 
