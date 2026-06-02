@@ -291,8 +291,8 @@ function toggleAdmin() {
 
 let konami = [
     "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
-    "ArrowLeft","ArrowRight",
-    "a","b"
+    "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight",
+    "b","a"
 ];
 
 let index = 0;
