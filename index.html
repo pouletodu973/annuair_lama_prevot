@@ -5,40 +5,63 @@
     <title>Annuaire du Lycée</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <h1>Annuaire du Lycée</h1>
 
-<button id="backBtn" class="hidden">⬅ Retour</button>
+<!-- CONTROLES -->
+<input type="text" id="search" placeholder="Rechercher un élève...">
 
 <button id="darkToggle">🌙 Mode sombre</button>
+<button id="backBtn" class="hidden">⬅ Retour</button>
 
+<!-- CLASSES -->
+<div id="classes"></div>
+
+<!-- LAYOUT PRINCIPAL -->
+<div class="container">
+
+    <!-- LISTE -->
+    <div id="annuaire"></div>
+
+    <!-- FICHE ELEVE -->
+    <div id="fiche" class="hidden">
+
+        <img id="photo" class="photo">
+
+        <h2 id="nomComplet"></h2>
+
+        <p><strong>Classe :</strong> <span id="classe"></span></p>
+        <p><strong>Session :</strong> <span id="session"></span></p>
+        <p><strong>Email :</strong> <span id="email"></span></p>
+        <p><strong>Téléphone :</strong> <span id="telephone"></span></p>
+
+        <h3>Description</h3>
+        <textarea id="description"></textarea>
+
+        <button id="deleteBtn" class="hidden">🗑 Supprimer</button>
+
+    </div>
+</div>
+
+<!-- ADMIN PANEL -->
 <div id="adminPanel" class="hidden">
-    <h3>Ajout élève (ADMIN)</h3>
+    <h3>➕ Ajouter un élève (ADMIN)</h3>
+
     <input id="newPrenom" placeholder="Prénom">
     <input id="newNom" placeholder="Nom">
     <input id="newClasse" placeholder="Classe">
     <textarea id="newDesc" placeholder="Description"></textarea>
+
     <button onclick="ajouterEleve()">Ajouter</button>
 </div>
 
-<input type="text" id="search" placeholder="Rechercher un élève...">
-
-<!-- FILTRES CLASSES -->
-<div id="classes"></div>
-
-<div class="container">
-    <div id="annuaire"></div>
-
-    <div id="fiche" class="hidden">
-        <h2 id="nomComplet"></h2>
-        <p><strong>Classe :</strong> <span id="classe"></span></p>
-
-        <h3>Description</h3>
-        <textarea id="description" rows="8"></textarea>
-    </div>
-</div>
+<!-- FEEDBACK + CONFETTI -->
+<div id="feedback" class="hidden"></div>
+<canvas id="confetti"></canvas>
 
 <script src="script.js"></script>
+
 </body>
 </html>
