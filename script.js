@@ -96,14 +96,19 @@ function afficherFiche(eleve) {
         save();
     };
 
-    // bouton delete admin
+    updateAdminUI(eleve);
+}
+
+/* ---------------- UPDATE ADMIN UI ---------------- */
+
+function updateAdminUI(eleve) {
     const del = document.getElementById("deleteBtn");
 
     if (adminMode) {
-        del.classList.remove("hidden");
+        del.style.display = "block";
         del.onclick = () => supprimerEleve(eleve);
     } else {
-        del.classList.add("hidden");
+        del.style.display = "none";
     }
 }
 
@@ -114,7 +119,7 @@ document.getElementById("backBtn").onclick = () => {
     document.getElementById("backBtn").classList.add("hidden");
 };
 
-/* ---------------- RECHERCHE ---------------- */
+/* ---------------- SEARCH ---------------- */
 
 document.getElementById("search").addEventListener("input", afficherEleves);
 
@@ -171,7 +176,7 @@ function save() {
     localStorage.setItem("eleves", JSON.stringify(eleves));
 }
 
-/* ---------------- FEEDBACK ---------------- */
+/* ---------------- FEEDBACK + CONFETTI ---------------- */
 
 function showFeedback(msg) {
     const f = document.getElementById("feedback");
@@ -197,8 +202,6 @@ function showFeedback(msg) {
 
     launchConfetti();
 }
-
-/* ---------------- CONFETTI ---------------- */
 
 function launchConfetti() {
     const canvas = document.getElementById("confetti");
@@ -240,7 +243,7 @@ function launchConfetti() {
     animate();
 }
 
-/* ---------------- KONAMI CODE (ADMIN MODE) ---------------- */
+/* ---------------- ADMIN MODE (KONAMI FIXED) ---------------- */
 
 function toggleAdmin() {
     adminMode = !adminMode;
@@ -249,23 +252,22 @@ function toggleAdmin() {
 
     if (adminMode) {
         panel.classList.remove("hidden");
-        showFeedback("🔐 ADMIN ACTIVÉ");
+        showFeedback("🔐 Mode admin activé");
     } else {
         panel.classList.add("hidden");
-        showFeedback("🔓 ADMIN DÉSACTIVÉ");
+        showFeedback("🔓 Mode admin désactivé");
     }
 
-    // rafraîchir fiche si élève ouvert
     if (currentEleve) {
-        afficherFiche(currentEleve);
+        updateAdminUI(currentEleve);
     }
 }
 
-/* KONAMI */
+/* KONAMI CODE */
 let konami = [
     "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
-    "ArrowLeft","Arrowleft","ArrowRight","ArrowRight",
-    "a","b"
+    "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight",
+    "b","a"
 ];
 
 let index = 0;
