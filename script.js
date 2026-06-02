@@ -37,7 +37,7 @@ function afficherClasses() {
     });
 }
 
-/* ---------------- LISTE ELEVES ---------------- */
+/* ---------------- LISTE ---------------- */
 
 function afficherEleves() {
     const container = document.getElementById("annuaire");
@@ -68,7 +68,7 @@ function afficherEleves() {
     });
 }
 
-/* ---------------- FICHE ELEVE ---------------- */
+/* ---------------- FICHE ---------------- */
 
 function afficherFiche(eleve) {
     currentEleve = eleve;
@@ -99,7 +99,7 @@ function afficherFiche(eleve) {
     updateAdminUI(eleve);
 }
 
-/* ---------------- UPDATE ADMIN UI ---------------- */
+/* ---------------- ADMIN UI ---------------- */
 
 function updateAdminUI(eleve) {
     const del = document.getElementById("deleteBtn");
@@ -129,7 +129,7 @@ document.getElementById("darkToggle").onclick = () => {
     document.body.classList.toggle("dark");
 };
 
-/* ---------------- AJOUT ELEVE ---------------- */
+/* ---------------- AJOUT ---------------- */
 
 function ajouterEleve() {
     const eleve = {
@@ -243,7 +243,33 @@ function launchConfetti() {
     animate();
 }
 
-/* ---------------- ADMIN MODE (KONAMI FIXED) ---------------- */
+/* ---------------- PHOTO UPLOAD ---------------- */
+
+document.getElementById("photo").onclick = () => {
+    document.getElementById("photoInput").click();
+};
+
+document.getElementById("photoInput").addEventListener("change", function () {
+
+    const file = this.files[0];
+    if (!file || !currentEleve) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        currentEleve.photo = e.target.result;
+
+        document.getElementById("photo").src = currentEleve.photo;
+
+        save();
+
+        showFeedback("📸 Photo mise à jour !");
+    };
+
+    reader.readAsDataURL(file);
+});
+
+/* ---------------- KONAMI ADMIN ---------------- */
 
 function toggleAdmin() {
     adminMode = !adminMode;
@@ -263,11 +289,10 @@ function toggleAdmin() {
     }
 }
 
-/* KONAMI CODE */
 let konami = [
     "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
-    "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight",
-    "b","a"
+    "ArrowLeft","ArrowRight",
+    "a","b"
 ];
 
 let index = 0;
