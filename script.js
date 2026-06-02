@@ -1,60 +1,72 @@
+let eleves = [];
+let classeActuelle = "toutes";
+
 fetch("eleves.json")
-.then(r => r.json())
-.then(eleves => {
+    .then(res => res.json())
+    .then(data => {
+        eleves = data;
+        afficherClasses();
+        afficherEleves();
+    });
 
+function afficherClasses() {
+    const container = document.getElementById("classes");
+
+    const classes = ["toutes", ...new Set(eleves.map(e => e.classe))];
+
+    container.innerHTML = "";
+
+    classes.forEach(c => {
+        const btn = document.createElement("div");
+        btn.className = "classe-btn";
+        btn.textContent = c;
+
+        btn.onclick = () => {
+            classeActuelle = c;
+            afficherEleves();
+        };
+
+        container.appendChild(btn);
+    });
+}
+
+function afficherEleves() {
     const container = document.getElementById("annuaire");
+    container.innerHTML = "";
 
-    const classes = {};
+    let filtres = eleves;
 
-    eleves.forEach(eleve => {
+    if (classeActuelle !== "toutes") {
+        filtres = eleves.filter(e => e.classe === classeActuelle);
+    }
 
-        if (!classes[eleve.classe]) {
-            classes[eleve.classe] = [];
-        }
+    const search = document.getElementById("search").value.toLowerCase();
+    if (search) {
+        filtres = filtres.filter(e =>
+            (e.nom + " " + e.prenom).toLowerCase().includes(search)
+        );
+    }
 
-        classes[eleve.classe].push(eleve);
+    filtres.forEach(eleve => {
+        const div = document.createElement("div");
+        div.className = "eleve";
+        div.textContent = eleve.prenom + " " + eleve.nom;
+
+        div.onclick = () => afficherFiche(eleve);
+
+        container.appendChild(div);
     });
+}
 
-    Object.keys(classes).sort().forEach(classe => {
+function afficherFiche(eleve) {
+    document.getElementById("fiche").classList.remove("hidden");
 
-        const titre = document.createElement("h2");
-        titre.textContent = classe;
+    document.getElementById("nomComplet").textContent =
+        eleve.prenom + " " + eleve.nom;
 
-        container.appendChild(titre);
+    document.getElementById("classe").textContent = eleve.classe;
 
-        classes[classe].forEach(eleve => {
+    document.getElementById("description").value = eleve.description || "";
+}
 
-            const div = document.createElement("div");
-
-            div.className = "eleve";
-
-            div.textContent =
-                eleve.prenom + " " + eleve.nom;
-
-            div.onclick = () => {
-
-                document
-                    .getElementById("fiche")
-                    .classList
-                    .remove("hidden");
-
-                document
-                    .getElementById("nomComplet")
-                    .textContent =
-                    eleve.prenom + " " + eleve.nom;
-
-                document
-                    .getElementById("classe")
-                    .textContent =
-                    eleve.classe;
-
-                document
-                    .getElementById("description")
-                    .value =
-                    eleve.description || "";
-            };
-
-            container.appendChild(div);
-        });
-    });
-});
+document.getElementById("search").addEventListener("input", afficherEleves);
