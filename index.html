@@ -9,6 +9,19 @@
 
 <h1>Annuaire du Lycée</h1>
 
+<button id="backBtn" class="hidden">⬅ Retour</button>
+
+<button id="darkToggle">🌙 Mode sombre</button>
+
+<div id="adminPanel" class="hidden">
+    <h3>Ajout élève (ADMIN)</h3>
+    <input id="newPrenom" placeholder="Prénom">
+    <input id="newNom" placeholder="Nom">
+    <input id="newClasse" placeholder="Classe">
+    <textarea id="newDesc" placeholder="Description"></textarea>
+    <button onclick="ajouterEleve()">Ajouter</button>
+</div>
+
 <input type="text" id="search" placeholder="Rechercher un élève...">
 
 <!-- FILTRES CLASSES -->
