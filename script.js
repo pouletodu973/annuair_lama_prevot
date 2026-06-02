@@ -6,14 +6,15 @@ let currentEleve = null;
 /* ---------------- INIT ---------------- */
 
 fetch("eleves.json")
-.then(r => r.json())
-.then(data => {
-    if (eleves.length === 0) eleves = data;
+    .then(r => r.json())
+    .then(data => {
+        if (eleves.length === 0) eleves = data;
 
-    afficherClasses();
-    afficherEleves();
-    initPhoto();
-});
+        afficherClasses();
+        afficherEleves();
+
+        initPhotoUpload(); // IMPORTANT
+    });
 
 /* ---------------- CLASSES ---------------- */
 
@@ -81,15 +82,14 @@ function afficherFiche(eleve) {
         eleve.prenom + " " + eleve.nom;
 
     document.getElementById("classe").textContent = eleve.classe;
-    document.getElementById("session").textContent = eleve.session || "-";
     document.getElementById("email").textContent = eleve.email || "-";
     document.getElementById("telephone").textContent = eleve.telephone || "-";
+    document.getElementById("session").textContent = eleve.session || "-";
 
-    document.getElementById("photo").src =
-        eleve.photo || "https://via.placeholder.com/120";
+    const photo = document.getElementById("photo");
+    photo.src = eleve.photo || "https://via.placeholder.com/120";
 
     const desc = document.getElementById("description");
-
     desc.value = eleve.description || "";
 
     desc.oninput = () => {
@@ -100,32 +100,51 @@ function afficherFiche(eleve) {
     updateAdminUI(eleve);
 }
 
-/* ---------------- PHOTO UPLOAD ---------------- */
+/* ---------------- PHOTO UPLOAD (FIX PROPRE) ---------------- */
 
-function initPhoto() {
+function initPhotoUpload() {
+
     const photo = document.getElementById("photo");
     const input = document.getElementById("photoInput");
 
+    if (!photo || !input) {
+        console.error("Photo elements manquants");
+        return;
+    }
+
+    // click photo → ouvrir file picker
     photo.addEventListener("click", () => {
-        if (!currentEleve) return;
+
+        if (!currentEleve) {
+            alert("Clique d'abord sur un élève");
+            return;
+        }
+
         input.click();
     });
 
+    // changement fichier
     input.addEventListener("change", () => {
+
         const file = input.files[0];
         if (!file || !currentEleve) return;
 
         const reader = new FileReader();
 
-        reader.onload = e => {
+        reader.onload = (e) => {
+
             currentEleve.photo = e.target.result;
+
             document.getElementById("photo").src = currentEleve.photo;
 
             save();
+
             showFeedback("📸 Photo ajoutée !");
         };
 
         reader.readAsDataURL(file);
+
+        input.value = "";
     });
 }
 
@@ -147,58 +166,18 @@ function updateAdminUI(eleve) {
 document.getElementById("backBtn").onclick = () => {
     document.getElementById("fiche").classList.add("hidden");
     document.getElementById("backBtn").classList.add("hidden");
+    currentEleve = null;
 };
 
 /* ---------------- SEARCH ---------------- */
 
 document.getElementById("search").addEventListener("input", afficherEleves);
 
-/* ---------------- DARK ---------------- */
+/* ---------------- DARK MODE ---------------- */
 
 document.getElementById("darkToggle").onclick = () => {
     document.body.classList.toggle("dark");
 };
-
-/* ---------------- AJOUT ---------------- */
-
-function ajouterEleve() {
-    const e = {
-        prenom: newPrenom.value,
-        nom: newNom.value,
-        classe: newClasse.value,
-        description: newDesc.value,
-        email: "",
-        telephone: "",
-        session: "2025-2026",
-        photo: ""
-    };
-
-    eleves.push(e);
-    save();
-
-    afficherClasses();
-    afficherEleves();
-
-    showFeedback("✔ Ajouté !");
-}
-
-/* ---------------- SUPPRESSION ---------------- */
-
-function supprimerEleve(eleve) {
-    if (!confirm("Supprimer ?")) return;
-
-    eleves = eleves.filter(e =>
-        !(e.nom === eleve.nom && e.prenom === eleve.prenom)
-    );
-
-    save();
-    afficherClasses();
-    afficherEleves();
-
-    document.getElementById("fiche").classList.add("hidden");
-
-    showFeedback("🗑 Supprimé");
-}
 
 /* ---------------- SAVE ---------------- */
 
@@ -214,7 +193,9 @@ function showFeedback(msg) {
     f.textContent = msg;
     f.classList.remove("hidden");
 
-    setTimeout(() => f.classList.add("hidden"), 2000);
+    setTimeout(() => {
+        f.classList.add("hidden");
+    }, 2000);
 }
 
 /* ---------------- KONAMI ADMIN ---------------- */
@@ -227,18 +208,19 @@ let konami = [
 
 let index = 0;
 
-document.addEventListener("keydown", e => {
+document.addEventListener("keydown", (e) => {
 
     if (e.key === konami[index]) index++;
     else index = 0;
 
     if (index === konami.length) {
+
         adminMode = !adminMode;
 
         document.getElementById("adminPanel")
             .classList.toggle("hidden");
 
-        showFeedback("🔐 Admin toggle");
+        showFeedback(adminMode ? "🔐 Admin ON" : "🔓 Admin OFF");
 
         index = 0;
     }
