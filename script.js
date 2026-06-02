@@ -242,10 +242,30 @@ function launchConfetti() {
 
 /* ---------------- KONAMI CODE (ADMIN MODE) ---------------- */
 
+function toggleAdmin() {
+    adminMode = !adminMode;
+
+    const panel = document.getElementById("adminPanel");
+
+    if (adminMode) {
+        panel.classList.remove("hidden");
+        showFeedback("🔐 ADMIN ACTIVÉ");
+    } else {
+        panel.classList.add("hidden");
+        showFeedback("🔓 ADMIN DÉSACTIVÉ");
+    }
+
+    // rafraîchir fiche si élève ouvert
+    if (currentEleve) {
+        afficherFiche(currentEleve);
+    }
+}
+
+/* KONAMI */
 let konami = [
     "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
-    "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight",
-    "b","a"
+    "ArrowLeft","Arrowleft","ArrowRight","ArrowRight",
+    "a","b"
 ];
 
 let index = 0;
@@ -259,13 +279,7 @@ document.addEventListener("keydown", (e) => {
     }
 
     if (index === konami.length) {
-        adminMode = !adminMode;
-
-        document.getElementById("adminPanel")
-            .classList.toggle("hidden");
-
-        showFeedback("🔐 Mode admin activé");
-
+        toggleAdmin();
         index = 0;
     }
 });
