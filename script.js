@@ -225,3 +225,8 @@ document.addEventListener("keydown", (e) => {
         index = 0;
     }
 });
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js")
+        .then(() => console.log("PWA activée"))
+        .catch(err => console.log("Erreur SW", err));
+}
